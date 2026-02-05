@@ -22,26 +22,19 @@ comparison = pd.DataFrame({
     'Przed usunięciem': stats_before,
     'Po usunięciu': stats_after
 })
-
-print("Porównanie statystyk dla kolumny alcohol:")
 print(comparison)
-print(f"\nLiczba usuniętych rekordów: {len(df_outliers)}")
 
-# 5. Wizualizacja - Boxploty (tylko Matplotlib)
 plt.figure(figsize=(10, 6))
 
 plt.subplot(1, 2, 1)
 plt.boxplot(df[col], patch_artist=True, boxprops=dict(facecolor='lightcoral'))
 plt.title('Przed usunięciem outlierów')
-plt.ylabel('Alkohol (%)')
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 
 plt.subplot(1, 2, 2)
 plt.boxplot(df_cleaned[col], patch_artist=True, boxprops=dict(facecolor='lightblue'))
 plt.title('Po usunięciu (|z| > 3)')
-plt.ylabel('Alkohol (%)')
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 
 plt.tight_layout()
-plt.savefig('wykrywanie_outlierow.png')
 plt.show()
