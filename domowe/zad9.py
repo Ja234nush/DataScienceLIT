@@ -1,21 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_regression
+from sklearn.linear_model import LinearRegression
 
-# 1. Generowanie danych (tym razem z wieloma cechami)
-X_raw, y = make_regression(n_samples=200, n_features=2, noise=15, random_state=42)
-y = y.reshape(-1, 1)
-
-# Dodajemy kolumnę jedynek do X, aby obsłużyć bias (b) jako jedną z wag
-X = np.c_[np.ones((X_raw.shape[0], 1)), X_raw]
-
-# 2. Inicjalizacja wag jako wektora (liczba cech + 1 dla biasu)
-w = np.zeros((X.shape[1], 1))
+X, y = make_regression(n_samples=200, n_features=1, noise=20, random_state=42)
+X = X.flatten()
 
 
-# 3. Funkcje wektorowe
-def predict(X, w):
-    return np.dot(X, w)  # Iloczyn macierzowy: y = X * w
+def predict(X, w, b):
+    return w * X + b
 
 
 def compute_mse(y_true, y_pred):
@@ -23,24 +16,41 @@ def compute_mse(y_true, y_pred):
 
 
 def compute_gradients(X, y, y_pred):
-    m = len(y)
-    # Wzór wektorowy na gradient: (2/m) * X^T * (y_pred - y)
-    dw = (2 / m) * np.dot(X.T, (y_pred - y))
-    return dw
+    dw = -2 * np.mean(X * (y - y_pred))
+    db = -2 * np.mean(y - y_pred)
+    return dw, db
 
 
-# 4. Pętla treningowa
-learning_rate = 0.1
+w, b = 0.5, 0.1
+learning_rate = 0.4
 n_iterations = 100
 loss_history = []
 
 for i in range(n_iterations):
-    y_pred = predict(X, w)
+    y_pred = predict(X, w, b)
     loss = compute_mse(y, y_pred)
     loss_history.append(loss)
 
-    dw = compute_gradients(X, y, y_pred)
+    dw, db = compute_gradients(X, y, y_pred)
     w -= learning_rate * dw
+    b -= learning_rate * db
 
-print("Finalny wektor wag (w tym w0 jako bias):")
-print(w)
+model_sk = LinearRegression()
+model_sk.fit(X.reshape(-1, 1), y)
+
+print(f"Manualne - w: {w:.4f}, b: {b:.4f}")
+print(f"Sklearn  - w: {model_sk.coef_[0]:.4f}, b: {model_sk.intercept_:.4f}")
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
+
+ax1.scatter(X, y, color='silver', label='Dane')
+ax1.plot(X, predict(X, w, b), color='red', linewidth=2)
+ax1.set_title("Dopasowanie linii regresji")
+ax1.legend()
+
+ax2.plot(loss_history, color='blue')
+ax2.set_title("Krzywa uczenia")
+ax2.set_xlabel("Iteracja")
+ax2.set_ylabel("MSE")
+
+plt.show()
