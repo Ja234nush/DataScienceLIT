@@ -27,10 +27,6 @@ plt.figure(figsize=(10, 6))
 plt.plot(train_sizes, train_scores_mean, 'o-', color="red", label="Train score")
 plt.plot(train_sizes, test_scores_mean, 'o-', color="green", label="Validation score ")
 
-plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
-                 train_scores_mean + train_scores_std, alpha=0.1, color="red")
-plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
-                 test_scores_mean + test_scores_std, alpha=0.1, color="green")
 
 plt.title("Krzywe uczenia)", fontsize=14)
 plt.xlabel("Liczba próbek treningowych", fontsize=12)
